@@ -123,4 +123,4 @@ dmypy.json
 .pyre/
 
 # api key
-.authentication.py
+./authentication.py
