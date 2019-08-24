@@ -2,6 +2,8 @@ import requests
 import math
 import csv
 import time
+
+#necessity to get your own api key and put into an authentication file if you wish to run this code as is.
 from authentication import api_key
 
 data = requests.get("https://api.nytimes.com/svc/search/v2/articlesearch.json?q=amazon&page={0}&api-key={1}".format(0, api_key))
