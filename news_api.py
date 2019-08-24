@@ -6,19 +6,15 @@ import time
 #necessity to get your own api key and put into an authentication file if you wish to run this code as is.
 from authentication import api_key
 
-data = requests.get("https://api.nytimes.com/svc/search/v2/articlesearch.json?q=amazon&page={0}&api-key={1}".format(0, api_key))
 
+# Test code useful for testing the api and how the data is returned
+data = requests.get("https://api.nytimes.com/svc/search/v2/articlesearch.json?q=amazon&page={0}&api-key={1}".format(0, api_key))
 data_hits = data.json()["response"]["docs"][0]["web_url"][24:34]
 
+#write to different csvs based on rate-limitation of api calls from NYT
 page_number = 1
-
 amazon_data = []
 headline_date = []
-
-
-#TODO
-#check for file existence, and check for header presence
-#write to different csvs and concatenate
 
 while page_number <= 100:
     api_call = requests.get("https://api.nytimes.com/svc/search/v2/articlesearch.json?q=amazon&page={0}&api-key={1}".format((page_number + 10), api_key))
@@ -35,6 +31,8 @@ while page_number <= 100:
     page_number += 1
     amazon_data = []
     headline_date = []
+    # need to sleep to avoid being rate-limited
     time.sleep(10)
 
+# print call to test output from while loop above
 # print(headline_date, amazon_data)
