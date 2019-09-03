@@ -2,12 +2,15 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 
+#reading csvs into respective dataframes
 amazon_df = pd.read_csv("combined_amazon_date_data.csv", index_col=False)
+amzn_df = pd.read_csv("AMZN.csv", index_col=False)
 
 # this is an effort to remove dates that are non-sensical from the data
 amazon_df['Date'] = pd.to_datetime(amazon_df['Date'], errors='coerce')
 amazon_df = amazon_df.dropna(subset=['Date'])
 
+#reading second csv into a dataframe
 amzn_df = pd.read_csv("AMZN.csv", index_col=False)
 
 # this is an effort to remove dates that are non-sensical from the data
