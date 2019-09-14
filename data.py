@@ -2,6 +2,8 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 
+date_list = []
+
 #reading csvs into respective dataframes
 amazon_df = pd.read_csv("combined_amazon_date_data.csv", index_col=False)
 amzn_df = pd.read_csv("AMZN.csv", index_col=False)
@@ -30,6 +32,9 @@ result_df = result_df.fillna(method='ffill')
 # work in progress as I see other keywords
 to_drop = ['rainforest', 'forest', 'Brazil', 'river', 'jungle', 'River', 'pilots', 'gangs', 'drugs', 'OkCupid', 'dating']
 result_df = result_df[~result_df['Headlines'].str.contains('|'.join(to_drop))]
+
+# TODO: combining duplicates by date
+result_df = result_df.groupby(['Date', 'Close'])['Headlines'].apply('// '.join).reset_index()
 
 # pushing df to a csv
 result_df.to_csv("final_amazon.csv")
