@@ -2,8 +2,6 @@ import pandas as pd
 import numpy as np
 import datetime as dt
 
-date_list = []
-
 #reading csvs into respective dataframes
 amazon_df = pd.read_csv("combined_amazon_date_data.csv", index_col=False)
 amzn_df = pd.read_csv("AMZN.csv", index_col=False)
