@@ -12,7 +12,12 @@ lm = LinearRegression()
 #Train-test-split and crossvalidation - crossvalidate convenience function
 X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=5)
 lm.fit(X_train, y_train)
-#TODO: Look at different statistics over rolling windows, previous timestep's price, more of the info from past (basically add in more predictive features)
+
+#TODO: Look at different statistics over rolling windows, previous timestep's price,
+# more of the info from past (basically add in more predictive features)
+# Also look at word embeddings (can use a pre-trained model)
+
+
 y_predict = lm.predict(X_test)
 plt.scatter(X_train, y_train)
 plt.plot(X_test, y_predict, color='red')
