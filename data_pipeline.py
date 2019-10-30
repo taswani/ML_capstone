@@ -67,8 +67,8 @@ def vectorization(result_df):
         processed_feature = processed_feature.lower().strip()
         processed_features.append(processed_feature)
     #Initializing Vectorizer
-    vectorizer = TfidfVectorizer(stop_words=stopwords.words('english'))
+    vectorizer = TfidfVectorizer(stop_words = stopwords.words('english'))
     #Transforming words to vectors
     processed_features = vectorizer.fit_transform(processed_features).toarray()
-    corpus_df = pd.DataFrame(processed_features, columns=vectorizer.get_feature_names())
+    corpus_df = pd.DataFrame(processed_features, columns = vectorizer.get_feature_names())
     return corpus_df
