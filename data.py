@@ -1,4 +1,5 @@
 import data_pipeline as dp
+from text_classification import *
 
-result_df = dp.prepare_data(dp.price_csv, dp.headline_csv)
+result_df = sentiment_analysis(result_df, processed_features)
 print(result_df)

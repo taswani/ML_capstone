@@ -41,8 +41,11 @@ def prepare_data(price_csv, headline_csv):
     result_df = result_df[~result_df['Headlines'].str.contains('|'.join(to_drop))]
     # combining duplicates by date
     result_df = result_df.groupby(['Date', 'Close'])['Headlines'].apply('// '.join).reset_index()
-    # pushing df to a csv
-    result_df.to_csv("final_amazon.csv")
+    #setting index as dates
+    result_df = result_df.set_index('Date')
+    # Adding a rolling window mean
+    result_df['Average Mean'] = result_df[['Close']].rolling(window = 100).mean()
+    result_df = result_df.fillna(method='bfill')
     return result_df
 
 def vectorization(result_df):
@@ -67,12 +70,12 @@ def vectorization(result_df):
         processed_feature = processed_feature.lower().strip()
         processed_features.append(processed_feature)
     #Main part of the data pipeline
-    #Initializing Vectorizer
-    vectorizer = TfidfVectorizer(stop_words = stopwords.words('english'))
-    #Transforming words to vectors
-    processed_features = vectorizer.fit_transform(processed_features).toarray()
-    corpus_df = pd.DataFrame(processed_features, columns = vectorizer.get_feature_names())
-    return corpus_df
+    # #Initializing Vectorizer
+    # vectorizer = TfidfVectorizer(stop_words = stopwords.words('english'))
+    # #Transforming words to vectors
+    # processed_features = vectorizer.fit_transform(processed_features).toarray()
+    # corpus_df = pd.DataFrame(processed_features, columns = vectorizer.get_feature_names())
+    return processed_features
 
 #TODO: fitting model on training and testing set as part of the data pipeline
 # Data should already preprocessed, mainly acting on training and testing data post wrangling
