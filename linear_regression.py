@@ -15,7 +15,7 @@ lm.fit(X_train, y_train)
 
 #TODO: Look at different statistics over rolling windows, previous timestep's price,
 # more of the info from past (basically add in more predictive features)
-# Also look at word embeddings (can use a pre-trained model)
+# Use a pre-trained model on corpora in order to provide the sentiment analysis for the classical model
 
 
 y_predict = lm.predict(X_test)

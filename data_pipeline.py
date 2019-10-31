@@ -66,9 +66,15 @@ def vectorization(result_df):
         # Converting to Lowercase
         processed_feature = processed_feature.lower().strip()
         processed_features.append(processed_feature)
+    #Main part of the data pipeline
     #Initializing Vectorizer
     vectorizer = TfidfVectorizer(stop_words = stopwords.words('english'))
     #Transforming words to vectors
     processed_features = vectorizer.fit_transform(processed_features).toarray()
     corpus_df = pd.DataFrame(processed_features, columns = vectorizer.get_feature_names())
     return corpus_df
+
+#TODO: fitting model on training and testing set as part of the data pipeline
+# Data should already preprocessed, mainly acting on training and testing data post wrangling
+# Create other functions to help validate the data in different ways
+# look into result_df['Headlines'].str.lower()
