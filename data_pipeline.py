@@ -40,13 +40,15 @@ def prepare_data(price_csv, headline_csv):
     to_drop = ['rainforest', 'forest', 'Brazil', 'river', 'jungle', 'River', 'pilots', 'gangs', 'drugs', 'OkCupid', 'dating']
     result_df = result_df[~result_df['Headlines'].str.contains('|'.join(to_drop))]
     # combining duplicates by date
-    result_df = result_df.groupby(['Date', 'Close'])['Headlines'].apply('// '.join).reset_index()
+    result_df = result_df.groupby(['Date', 'Open', 'High', 'Low', 'Close'])['Headlines'].apply('// '.join).reset_index()
     #setting index as dates
     result_df = result_df.set_index('Date')
     # Adding a rolling window mean
     # TODO: add minimum mean and maximum mean as potential features
     result_df['Average Mean'] = result_df[['Close']].rolling(window = 100).mean()
     result_df = result_df.fillna(method='bfill')
+    # Adding a differential column
+    result_df['Differential'] = result_df['High'].values - result_df['Low'].values
     return result_df
 
 def vectorization(result_df):

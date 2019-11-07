@@ -9,16 +9,18 @@ processed_features = dp.vectorization(result_df)
 def sentiment_analysis(result_df, processed_features):
     # List for taking in the sentiments associated with the processed features
     sentiments = []
+    polarity = []
     # Using a pre-trained model to analyze sentiment for each headline
-    # TODO: Add polarity as is for extreme values
     for feature in processed_features:
         sentence = TextBlob(feature)
+        polarity.append(sentence.sentiment.polarity)
         if sentence.sentiment.polarity > 0:
             sentiments.append(1)
         else:
             sentiments.append(0)
     # Adding a new column in the dataframe and returning it
     result_df['Sentiment'] = sentiments
+    result_df['Polarity'] = polarity
     # pushing df to a csv
     result_df.to_csv("final_amazon.csv")
     return result_df
