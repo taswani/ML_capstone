@@ -44,6 +44,7 @@ def prepare_data(price_csv, headline_csv):
     #setting index as dates
     result_df = result_df.set_index('Date')
     # Adding a rolling window mean
+    # TODO: add minimum mean and maximum mean as potential features
     result_df['Average Mean'] = result_df[['Close']].rolling(window = 100).mean()
     result_df = result_df.fillna(method='bfill')
     return result_df

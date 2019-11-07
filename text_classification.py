@@ -10,6 +10,7 @@ def sentiment_analysis(result_df, processed_features):
     # List for taking in the sentiments associated with the processed features
     sentiments = []
     # Using a pre-trained model to analyze sentiment for each headline
+    # TODO: Add polarity as is for extreme values
     for feature in processed_features:
         sentence = TextBlob(feature)
         if sentence.sentiment.polarity > 0:
