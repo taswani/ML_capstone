@@ -9,7 +9,7 @@ from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_val
 X = result_df[['Open', 'High', 'Low', 'Average Mean', 'Polarity', 'Sentiment', 'Differential']]
 y = result_df[['Close']]
 
-reg = xgb.XGBRegressor(n_estimators=1000)
+reg = xgb.XGBRegressor(n_estimators=50)
 #Train-test-split and crossvalidation - crossvalidate convenience function (gives the type of error you want)
 tscv = TimeSeriesSplit(n_splits=5)
 
