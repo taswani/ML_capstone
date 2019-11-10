@@ -41,7 +41,8 @@ def prepare_data(price_csv, headline_csv):
     result_df = result_df[~result_df['Headlines'].str.contains('|'.join(to_drop))]
     # combining duplicates by date
     result_df = result_df.groupby(['Date', 'Open', 'High', 'Low', 'Close'])['Headlines'].apply('// '.join).reset_index()
-    #setting index as dates
+    # setting index as dates, and imputing missing dates
+    # Every value is forward filled as a necessity to keep everything in sync
     result_df = result_df.set_index('Date')
     idx = pd.date_range('2016-06-30', '2019-08-11')
     result_df = result_df.reindex(idx)
