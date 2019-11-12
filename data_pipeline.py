@@ -47,6 +47,8 @@ def prepare_data(price_csv, headline_csv):
     idx = pd.date_range('2016-06-30', '2019-08-11')
     result_df = result_df.reindex(idx)
     result_df = result_df.fillna(method='ffill')
+    # TODO: forward fill with the mean polarity: for days without headlines - basically it was neutral
+    # TODO: Find actual closing prices for the dates without headlines
     # Adding a rolling window mean
     # TODO: add minimum mean and maximum mean as potential features
     result_df['Average Mean'] = result_df[['Close']].rolling(window = 100).mean()

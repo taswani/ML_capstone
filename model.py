@@ -29,3 +29,7 @@ print(reg.score(X_test, y_test))
 
 # xgb.plot_importance(reg)
 # plt.show()
+
+# TODO: Look at significance of predictors coefficient for linear regression (have to use statsmodels)
+# TODO: Ensembling linear regression and XGBoost - bagging
+        # Look at stacking, using predictions from both models and inputting it into a different model
