@@ -6,58 +6,52 @@ import numpy as np
 import xgboost as xgb
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout
+from keras.preprocessing.sequence import TimeseriesGenerator
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
-rnn_df = result_df[['Open', 'High', 'Low', 'Average Mean', 'Polarity', 'Sentiment', 'Differential', 'Close']]
-
-column_labels = ['Open', 'High', 'Low', 'Average Mean', 'Polarity', 'Sentiment', 'Differential', 'Close']
+X = result_df[['Open', 'High', 'Low', 'Average Mean', 'Polarity', 'Sentiment', 'Differential']]
+y = result_df[['Close']]
 
 # 1139 x 8
-# print(rnn_df.shape)
+# print(result_df.shape)
 
+# Time series specific train-test-split
 tscv = TimeSeriesSplit(n_splits=5)
 
-for train_index, test_index in tscv.split(rnn_df):
-    df_train, df_test = rnn_df.iloc[train_index], rnn_df.iloc[test_index]
+for train_index, test_index in tscv.split(X):
+    X_train, X_test = X.iloc[train_index], X.iloc[test_index]
+    y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
-df_values = df_train.loc[:, column_labels].values
-
+# Scaling all values for a normalized input and output
 min_max_scaler = MinMaxScaler()
 
-train = min_max_scaler.fit_transform(df_values)
-test = min_max_scaler.transform(df_test.loc[:, column_labels])
+X_train = min_max_scaler.fit_transform(X_train)
+X_test = min_max_scaler.fit_transform(X_test)
+y_train = min_max_scaler.fit_transform(y_train)
+y_test = min_max_scaler.fit_transform(y_test)
 
-# Training data set
-X_train = []
-y_train = []
+# Using keras' timeseriesgenerator in order to divide the data into batches
+# Putting data into 3D for input to the LSTM
+data_gen_train = TimeseriesGenerator(X_train, y_train,
+                               length=60, sampling_rate=1,
+                               batch_size=32)
 
-for i in range(60, 949):
-    X_train.append(train[i-60:i, :-1:1])
-    y_train.append(train[i, -1])
+data_gen_test = TimeseriesGenerator(X_test, y_test,
+                               length=60, sampling_rate=1,
+                               batch_size=32)
 
-X_train, y_train = np.array(X_train), np.array(y_train)
-
-X_train = np.reshape(X_train, (X_train.shape[0], X_train.shape[1], 7))
-
-# Testing dataset
-X_test = []
-y_test = []
-
-for i in range(60, 189):
-    X_test.append(test[i-60:i, :-1:1])
-    y_test.append(test[i, -1])
-
-X_test, y_test = np.array(X_test), np.array(y_test)
-
-X_test = np.reshape(X_test, (X_test.shape[0], X_test.shape[1], 7))
+# Done for Input shape of LSTM
+train_X, train_y = data_gen_train[0]
+test_X, test_y = data_gen_test[0]
 
 # Begin LSTM
 
 model = Sequential()
 
-model.add(LSTM(units = 50, return_sequences = True, input_shape = (X_train.shape[1], 7)))
-model.add(Dropout(0.2))
+# 50 neurons per layer till last one
+model.add(LSTM(units = 50, return_sequences = True, input_shape = (train_X.shape[1], train_X.shape[2])))
+model.add(Dropout(0.2)) #Drops 20% of layer to prevent overfitting
 
 model.add(LSTM(units = 50, return_sequences = True))
 model.add(Dropout(0.2))
@@ -70,15 +64,13 @@ model.add(Dropout(0.2))
 
 model.add(Dense(units = 1))
 
-model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-model.fit(X_train, y_train, epochs = 5, batch_size = 32)
-score, acc = model.evaluate(X_test, y_test, batch_size = 32)
+model.compile(optimizer = 'adam', loss = 'mean_squared_error', metrics=['accuracy'])
+model.fit_generator(data_gen_train, epochs = 100, validation_data = data_gen_test)
+score = model.evaluate_generator(data_gen_test, verbose=0)
 
-predicted_stock_price = model.predict(X_test)
+predicted_stock_price = model.predict(test_X)
 predicted_stock_price = min_max_scaler.inverse_transform(predicted_stock_price)
 
-print(predicted_stock_price)
-print()
-print("Score: ", score)
-print()
-print("Accuracy: ", acc)
+# [0.022621948271989822, 0.7829457521438599] after 100 epochs
+print("Scalar Loss: ", score[0])
+print("Accuracy: ", score[1])
