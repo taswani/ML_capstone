@@ -6,6 +6,8 @@ import numpy as np
 import xgboost as xgb
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout
+from keras import backend as K
+from keras.callbacks.callbacks import EarlyStopping
 from keras.preprocessing.sequence import TimeseriesGenerator
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
@@ -46,6 +48,11 @@ data_gen_test = TimeseriesGenerator(X_test, y_test,
 train_X, train_y = data_gen_train[0]
 test_X, test_y = data_gen_test[0]
 
+def coeff_determination(y_true, y_pred):
+    SS_res = K.sum(K.square(y_true - y_pred))
+    SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
+    return (1 - SS_res/(SS_tot + K.epsilon()))
+
 # Potential consideration: feed forward neural network instead
 
 # Begin LSTM
@@ -58,20 +65,13 @@ model = Sequential()
 model.add(LSTM(units = 50, return_sequences = True, input_shape = (train_X.shape[1], train_X.shape[2])))
 model.add(Dropout(0.2)) #Drops 20% of layer to prevent overfitting
 
-model.add(LSTM(units = 50, return_sequences = True))
-model.add(Dropout(0.2))
-
-model.add(LSTM(units = 50, return_sequences = True))
-model.add(Dropout(0.2))
-
 model.add(LSTM(units = 50))
 model.add(Dropout(0.2))
 
 model.add(Dense(units = 1))
 
-model.compile(optimizer = 'adam', loss = 'mean_squared_error', metrics=['accuracy']) # TODO: Change metrics to R^2, mean_absolute_error
-# TODO: Early stopping callback based on improvement or lack there of (2 or 3 epochs)
-model.fit_generator(data_gen_train, epochs = 100, validation_data = data_gen_test)
+model.compile(optimizer = 'adam', loss = 'mean_squared_error', metrics=['mae']) # TODO: Change metrics to R^2, mean_absolute_error
+model.fit_generator(data_gen_train, epochs = 100, callbacks = [EarlyStopping(monitor='mae', patience=3)], validation_data = data_gen_test)
 score = model.evaluate_generator(data_gen_test, verbose=0)
 
 predicted_stock_price = model.predict(test_X)
@@ -79,6 +79,6 @@ predicted_stock_price = min_max_scaler.inverse_transform(predicted_stock_price)
 
 # [0.022621948271989822, 0.7829457521438599] after 100 epochs
 print("Scalar Loss: ", score[0])
-print("Accuracy: ", score[1])
+print("R-squared: ", score[1])
 
 # TODO: Plot of metrics and diagnostics
