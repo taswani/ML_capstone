@@ -17,6 +17,7 @@ for train_index, test_index in tscv.split(X):
     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
 
+# TODO: Gradient descent might require minmax scaling, just in case
 
 reg.fit(X_train, y_train,
         eval_set=[(X_train, y_train), (X_test, y_test)],

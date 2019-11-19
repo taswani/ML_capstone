@@ -26,10 +26,11 @@ for train_index, test_index in tscv.split(X):
 # Scaling all values for a normalized input and output
 min_max_scaler = MinMaxScaler()
 
+# Changed fit_transform to transform for test fold to avoid data leakage from future test set
 X_train = min_max_scaler.fit_transform(X_train)
-X_test = min_max_scaler.fit_transform(X_test)
+X_test = min_max_scaler.transform(X_test)
 y_train = min_max_scaler.fit_transform(y_train)
-y_test = min_max_scaler.fit_transform(y_test)
+y_test = min_max_scaler.transform(y_test)
 
 # Using keras' timeseriesgenerator in order to divide the data into batches
 # Putting data into 3D for input to the LSTM
@@ -45,10 +46,14 @@ data_gen_test = TimeseriesGenerator(X_test, y_test,
 train_X, train_y = data_gen_train[0]
 test_X, test_y = data_gen_test[0]
 
+# Potential consideration: feed forward neural network instead
+
 # Begin LSTM
 
 model = Sequential()
 
+# TODO: Max 1 or 2 LSTM layers with a Dense layer or two at the end (20-50 units)
+# Remove dropout initially to let overfitting happen.
 # 50 neurons per layer till last one
 model.add(LSTM(units = 50, return_sequences = True, input_shape = (train_X.shape[1], train_X.shape[2])))
 model.add(Dropout(0.2)) #Drops 20% of layer to prevent overfitting
@@ -64,7 +69,8 @@ model.add(Dropout(0.2))
 
 model.add(Dense(units = 1))
 
-model.compile(optimizer = 'adam', loss = 'mean_squared_error', metrics=['accuracy'])
+model.compile(optimizer = 'adam', loss = 'mean_squared_error', metrics=['accuracy']) # TODO: Change metrics to R^2, mean_absolute_error
+# TODO: Early stopping callback based on improvement or lack there of (2 or 3 epochs)
 model.fit_generator(data_gen_train, epochs = 100, validation_data = data_gen_test)
 score = model.evaluate_generator(data_gen_test, verbose=0)
 
@@ -74,3 +80,5 @@ predicted_stock_price = min_max_scaler.inverse_transform(predicted_stock_price)
 # [0.022621948271989822, 0.7829457521438599] after 100 epochs
 print("Scalar Loss: ", score[0])
 print("Accuracy: ", score[1])
+
+# TODO: Plot of metrics and diagnostics
