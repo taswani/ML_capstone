@@ -34,7 +34,7 @@ reg.fit(X_train, y_train,
 
 predict = reg.predict(X_test)
 print(reg.score(X_test, y_test))
-# Best R-squared value I have so far is: 0.9777880665681858
+# Best R-squared value I have so far is: 0.9828774725431012
 
 # xgb.plot_importance(reg)
 # plt.show()
