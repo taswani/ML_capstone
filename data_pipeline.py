@@ -30,11 +30,13 @@ def prepare_data(price_csv, headline_csv):
     datetime_conversion(amazon_df)
     datetime_conversion(amzn_df)
     # merging
-    result_df = pd.merge(amazon_df, amzn_df, how="left",  on='Date')
+    amzn_df = amzn_df.set_index('Date').join(amazon_df.set_index('Date'))
+    result_df = amzn_df
     # dates being sorted for forward fill
     result_df = result_df.sort_values(by="Date")
     # cover null values in data
     result_df = result_df.fillna(method='ffill')
+    result_df = result_df.fillna(method='bfill')
     # dropping any mention of anything other than the company amazon
     # work in progress as I see other keywords
     to_drop = ['rainforest', 'forest', 'Brazil', 'river', 'jungle', 'River', 'pilots', 'gangs', 'drugs', 'OkCupid', 'dating']
