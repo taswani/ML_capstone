@@ -47,10 +47,10 @@ data_gen_test = TimeseriesGenerator(X_test, y_test,
 train_X, train_y = data_gen_train[0]
 test_X, test_y = data_gen_test[0]
 
-print()
-print(train_X.shape)
-print()
-print(train_y.shape)
+# (32, 7, 5)
+# print(train_X.shape)
+# (32, 1)
+# print(train_y.shape)
 
 def r_squared(y_true, y_pred):
     SS_res = K.sum(K.square(y_true - y_pred))
