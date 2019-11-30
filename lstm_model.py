@@ -7,16 +7,15 @@ import xgboost as xgb
 from keras.models import Sequential
 from keras.layers import Dense, LSTM, Dropout
 from keras import backend as K
+from keras import optimizers
 from keras.callbacks.callbacks import EarlyStopping
 from keras.preprocessing.sequence import TimeseriesGenerator
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
-X = result_df[['Open', 'High', 'Low', 'Average Mean', 'Polarity', 'Sentiment', 'Differential']]
+# Removing Average Mean, Differential to become a little more efficient
+X = result_df[['Open', 'High', 'Low', 'Polarity', 'Sentiment']]
 y = result_df[['Close']]
-
-# 1139 x 8
-# print(result_df.shape)
 
 # Time series specific train-test-split
 tscv = TimeSeriesSplit(n_splits=5)
@@ -37,40 +36,48 @@ y_test = min_max_scaler.transform(y_test)
 # Using keras' timeseriesgenerator in order to divide the data into batches
 # Putting data into 3D for input to the LSTM
 data_gen_train = TimeseriesGenerator(X_train, y_train,
-                               length=30, sampling_rate=1,
+                               length=7, sampling_rate=1,
                                batch_size=32)
 
 data_gen_test = TimeseriesGenerator(X_test, y_test,
-                               length=30, sampling_rate=1,
+                               length=7, sampling_rate=1,
                                batch_size=32)
 
 # Done for Input shape of LSTM
 train_X, train_y = data_gen_train[0]
 test_X, test_y = data_gen_test[0]
 
+print()
+print(train_X.shape)
+print()
+print(train_y.shape)
+
 def r_squared(y_true, y_pred):
     SS_res = K.sum(K.square(y_true - y_pred))
     SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
     return (1 - SS_res/(SS_tot + K.epsilon()))
 
-# Potential consideration: feed forward neural network instead
+# TODO: feed forward neural network instead
 
 # Begin LSTM
 
 model = Sequential()
 # Remove dropout initially to let overfitting happen.
 
-model.add(LSTM(units = 45, return_sequences = True, input_shape = (train_X.shape[1], train_X.shape[2])))
+model.add(LSTM(units = 20, return_sequences = True, input_shape = (train_X.shape[1], train_X.shape[2])))
 # model.add(Dropout(0.2)) #Drops 20% of layer to prevent overfitting
 
-model.add(LSTM(units = 45))
+model.add(LSTM(units = 5))
 # model.add(Dropout(0.2))
 
 model.add(Dense(units = 1))
 
-model.compile(optimizer = 'adam', loss = 'mean_absolute_error', metrics=[r_squared]) # TODO: Change metrics to R^2, mean_absolute_error
+# Scheduled learning_rate (learning rate slows down over epochs)
+adam = optimizers.Adam(learning_rate = .003)
+model.compile(optimizer = adam, loss = 'mean_absolute_error', metrics=[r_squared]) # TODO: Change metrics to R^2, mean_absolute_error
 # Need to put in later: callbacks = [EarlyStopping(monitor='loss', patience=10)],
-model.fit_generator(data_gen_train, epochs = 80, validation_data = data_gen_test)
+# Try model.fit and get history
+model.fit_generator(data_gen_train, epochs = 100, validation_data = data_gen_test)
 score = model.evaluate_generator(data_gen_test, verbose=0)
 
 predicted_stock_price = model.predict(test_X)
@@ -80,4 +87,4 @@ predicted_stock_price = min_max_scaler.inverse_transform(predicted_stock_price)
 print("Mean-squared-error: ", score[0])
 print("R-squared: ", score[1])
 
-# TODO: Plot of metrics and diagnostics
+# TODO: Plot of metrics and diagnostics - specifically of loss/val-loss
