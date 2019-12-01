@@ -18,11 +18,14 @@ X = result_df[['Open', 'High', 'Low', 'Polarity', 'Sentiment']]
 y = result_df[['Close']]
 
 # Time series specific train-test-split
-tscv = TimeSeriesSplit(n_splits=5)
+tscv = TimeSeriesSplit(n_splits=4)
 
 for train_index, test_index in tscv.split(X):
     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
+
+
+# print("X_Train: ", X_train, "X_Test: ", X_test, "y_train: ", y_train, "y_test: ", y_test)
 
 # Scaling all values for a normalized input and output
 min_max_scaler = MinMaxScaler()
@@ -36,12 +39,12 @@ y_test = min_max_scaler.transform(y_test)
 # Using keras' timeseriesgenerator in order to divide the data into batches
 # Putting data into 3D for input to the LSTM
 data_gen_train = TimeseriesGenerator(X_train, y_train,
-                               length=7, sampling_rate=1,
-                               batch_size=32)
+                               length=14, sampling_rate=1,
+                               batch_size=160)
 
 data_gen_test = TimeseriesGenerator(X_test, y_test,
-                               length=7, sampling_rate=1,
-                               batch_size=32)
+                               length=14, sampling_rate=1,
+                               batch_size=160)
 
 # Done for Input shape of LSTM
 train_X, train_y = data_gen_train[0]
@@ -50,7 +53,7 @@ test_X, test_y = data_gen_test[0]
 # (32, 7, 5)
 # print(train_X.shape)
 # (32, 1)
-# print(train_y.shape)
+# print(train_y)
 
 def r_squared(y_true, y_pred):
     SS_res = K.sum(K.square(y_true - y_pred))
@@ -64,27 +67,37 @@ def r_squared(y_true, y_pred):
 model = Sequential()
 # Remove dropout initially to let overfitting happen.
 
-model.add(LSTM(units = 20, return_sequences = True, input_shape = (train_X.shape[1], train_X.shape[2])))
+model.add(LSTM(units = 40, return_sequences = False, input_shape = (train_X.shape[1], train_X.shape[2])))
 # model.add(Dropout(0.2)) #Drops 20% of layer to prevent overfitting
 
-model.add(LSTM(units = 5))
+# model.add(LSTM(units = 20, return_sequences = False))
 # model.add(Dropout(0.2))
 
 model.add(Dense(units = 1))
 
 # Scheduled learning_rate (learning rate slows down over epochs)
-adam = optimizers.Adam(learning_rate = .003)
-model.compile(optimizer = adam, loss = 'mean_absolute_error', metrics=[r_squared]) # TODO: Change metrics to R^2, mean_absolute_error
+adam = optimizers.Adam(learning_rate = .0022)
+model.compile(optimizer = adam, loss = 'mean_absolute_error', metrics=[r_squared])
 # Need to put in later: callbacks = [EarlyStopping(monitor='loss', patience=10)],
 # Try model.fit and get history
-model.fit_generator(data_gen_train, epochs = 100, validation_data = data_gen_test)
+history = model.fit_generator(data_gen_train, epochs = 200, validation_data = data_gen_test)
 score = model.evaluate_generator(data_gen_test, verbose=0)
 
 predicted_stock_price = model.predict(test_X)
 predicted_stock_price = min_max_scaler.inverse_transform(predicted_stock_price)
 
-# MSE: 0.015544441528618336, R-squared: 0.7094802856445312 after 200 epochs
+# MSE: 0.012109583243727684, R-squared: 0.9007326364517212 after 200 epochs, learning_rate = 0.0022, and 160 batch size, step size = 14
 print("Mean-squared-error: ", score[0])
 print("R-squared: ", score[1])
 
-# TODO: Plot of metrics and diagnostics - specifically of loss/val-loss
+# Plot of metrics and diagnostics - specifically of loss/val-loss
+plt.plot(history.history['loss'], label='train')
+plt.plot(history.history['val_loss'], label='test')
+plt.legend()
+plt.show()
+
+# Plot of metrics and diagnostics - specifically of r-squared/val-r-squared
+plt.plot(history.history['r_squared'], label='train')
+plt.plot(history.history['val_r_squared'], label='test')
+plt.legend()
+plt.show()

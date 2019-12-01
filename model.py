@@ -12,7 +12,7 @@ y = result_df[['Close']]
 
 reg = xgb.XGBRegressor(n_estimators=50)
 #Train-test-split and crossvalidation - crossvalidate convenience function (gives the type of error you want)
-tscv = TimeSeriesSplit(n_splits=5)
+tscv = TimeSeriesSplit(n_splits=4)
 
 for train_index, test_index in tscv.split(X):
     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
@@ -33,8 +33,8 @@ reg.fit(X_train, y_train,
         verbose=False) # Change verbose to True if you want to see it train
 
 predict = reg.predict(X_test)
-print(reg.score(X_test, y_test))
-# Best R-squared value I have so far is: 0.9828774725431012
+print("R-squared value: ", reg.score(X_test, y_test))
+# Best R-squared value I have so far is: 0.9864285929257569
 
 # xgb.plot_importance(reg)
 # plt.show()
