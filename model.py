@@ -7,7 +7,7 @@ import xgboost as xgb
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
-X = result_df[['Open', 'High', 'Low', 'Average Mean', 'Polarity', 'Sentiment', 'Differential']]
+X = result_df[['Open', 'High', 'Low', 'Polarity', 'Sentiment']]
 y = result_df[['Close']]
 
 reg = xgb.XGBRegressor(n_estimators=50)
@@ -34,7 +34,7 @@ reg.fit(X_train, y_train,
 
 predict = reg.predict(X_test)
 print("R-squared value: ", reg.score(X_test, y_test))
-# Best R-squared value I have so far is: 0.9864285929257569
+# Best R-squared value I have so far is: 0.9866523109744227
 
 # xgb.plot_importance(reg)
 # plt.show()
