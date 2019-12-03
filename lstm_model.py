@@ -76,6 +76,7 @@ model.add(LSTM(units = 40, return_sequences = False, input_shape = (train_X.shap
 model.add(Dense(units = 1))
 
 # Scheduled learning_rate (learning rate slows down over epochs)
+# Lower learning rate
 adam = optimizers.Adam(learning_rate = .0022)
 model.compile(optimizer = adam, loss = 'mean_absolute_error', metrics=[r_squared])
 # Need to put in later: callbacks = [EarlyStopping(monitor='loss', patience=10)],
@@ -87,7 +88,7 @@ predicted_stock_price = model.predict(test_X)
 predicted_stock_price = min_max_scaler.inverse_transform(predicted_stock_price)
 
 # MSE: 0.012109583243727684, R-squared: 0.9007326364517212 after 200 epochs, learning_rate = 0.0022, and 160 batch size, step size = 14
-print("Mean-squared-error: ", score[0])
+print("Mean-absolute-error: ", score[0])
 print("R-squared: ", score[1])
 
 # Plot of metrics and diagnostics - specifically of loss/val-loss
