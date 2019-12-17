@@ -12,8 +12,8 @@ import re
 # nltk.download('punkt')
 # nltk.download('stopwords')
 
-price_csv = "AMZN.csv"
-headline_csv = "combined_amazon_date_data.csv"
+price_csv = "../data_csv/AMZN.csv"
+headline_csv = "../data_csv/combined_amazon_date_data.csv"
 
 #Function for datetime conversion
 def datetime_conversion(df):
