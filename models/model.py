@@ -7,7 +7,7 @@ import xgboost as xgb
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
-X = result_df[['Open', 'High', 'Low', 'Polarity', 'Sentiment']]
+X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity', 'Sentiment']]
 y = result_df[['Close']]
 
 reg = xgb.XGBRegressor(n_estimators=50)

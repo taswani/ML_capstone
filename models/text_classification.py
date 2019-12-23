@@ -21,6 +21,8 @@ def sentiment_analysis(result_df, processed_features):
     # Adding a new column in the dataframe and returning it
     result_df['Sentiment'] = sentiments
     result_df['Polarity'] = polarity
+    result_df['Average Polarity'] = result_df[['Polarity']].rolling(window = 100).mean()
+    result_df = result_df.fillna(method='bfill')
     # pushing df to a csv
     result_df.to_csv("final_amazon.csv")
     return result_df

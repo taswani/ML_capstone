@@ -10,14 +10,16 @@ from keras import optimizers
 from keras.callbacks.callbacks import EarlyStopping
 from keras.preprocessing.sequence import TimeseriesGenerator
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.feature_selection import RFE
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
 # TODO: Scikit Learn for feature selection, for checking importance of polarity and sentiment in relation to predictions
 # Looking for feature selection in regards to regression: f-regression
 # Isn't exactly causation, but there is correlation
+# Hard to use sci-kit learn feature selection where there aren't any estimators
 
 # Removing Average Mean, Differential to become a little more efficient
-X = result_df[['Open', 'High', 'Low', 'Polarity', 'Sentiment']]
+X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity', 'Sentiment']]
 y = result_df[['Close']]
 
 # Time series specific train-test-split

@@ -5,6 +5,7 @@ from nltk import word_tokenize
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 import pandas as pd
+from dask import dataframe as dd
 import re
 
 #In case you need data
@@ -15,7 +16,6 @@ import re
 price_csv = "../data_csv/AMZN.csv"
 headline_csv = "../data_csv/combined_amazon_date_data.csv"
 
-# TODO: Start out with a dask dataframe for transformations and change back to pandas when done with data pipeline
 # TODO: Getting rolling mean for polarity
 
 #Function for datetime conversion
@@ -36,16 +36,21 @@ def prepare_data(price_csv, headline_csv):
     amzn_df = amzn_df.set_index('Date').join(amazon_df.set_index('Date'))
     result_df = amzn_df
     # dates being sorted for forward fill
-    result_df = result_df.sort_values(by="Date")
+    result_df = result_df.sort_values(by='Date')
     # cover null values in data
     result_df = result_df.fillna(method='ffill')
     result_df = result_df.fillna(method='bfill')
+    # Changing to Dask dataframe in order to parallelize the data wrangling (use case for large datasets)
+    result_df = dd.from_pandas(result_df, npartitions=1)
     # dropping any mention of anything other than the company amazon
     # work in progress as I see other keywords
     to_drop = ['rainforest', 'forest', 'Brazil', 'river', 'jungle', 'River', 'pilots', 'gangs', 'drugs', 'OkCupid', 'dating']
     result_df = result_df[~result_df['Headlines'].str.contains('|'.join(to_drop))]
     # combining duplicates by date
     result_df = result_df.groupby(['Date', 'Open', 'High', 'Low', 'Close'])['Headlines'].apply('// '.join).reset_index()
+    print(result_df._meta.dtypes)
+    # Changing Dask dataframe to Pandas for reindexing
+    result_df = result_df.compute()
     # setting index as dates, and imputing missing dates
     # Every value is forward filled as a necessity to keep everything in sync
     result_df = result_df.set_index('Date')
