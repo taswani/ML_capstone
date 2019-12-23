@@ -14,6 +14,8 @@ reg = xgb.XGBRegressor(n_estimators=50)
 #Train-test-split and crossvalidation - crossvalidate convenience function (gives the type of error you want)
 tscv = TimeSeriesSplit(n_splits=4)
 
+# TODO: pull out numpy array and slice that instead, using indexing instead to split
+
 for train_index, test_index in tscv.split(X):
     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
     y_train, y_test = y.iloc[train_index], y.iloc[test_index]

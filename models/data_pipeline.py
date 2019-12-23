@@ -15,6 +15,9 @@ import re
 price_csv = "../data_csv/AMZN.csv"
 headline_csv = "../data_csv/combined_amazon_date_data.csv"
 
+# TODO: Start out with a dask dataframe for transformations and change back to pandas when done with data pipeline
+# TODO: Getting rolling mean for polarity
+
 #Function for datetime conversion
 def datetime_conversion(df):
     df['Date'] = pd.to_datetime(df['Date'], errors='coerce')

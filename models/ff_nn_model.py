@@ -12,6 +12,10 @@ from keras.preprocessing.sequence import TimeseriesGenerator
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
+# TODO: Scikit Learn for feature selection, for checking importance of polarity and sentiment in relation to predictions
+# Looking for feature selection in regards to regression: f-regression
+# Isn't exactly causation, but there is correlation
+
 # Removing Average Mean, Differential to become a little more efficient
 X = result_df[['Open', 'High', 'Low', 'Polarity', 'Sentiment']]
 y = result_df[['Close']]
@@ -47,7 +51,6 @@ model.add(Dense(units = 1))
 # TODO: Scheduled learning rate
 adam = optimizers.Adam(learning_rate = .003)
 model.compile(optimizer = adam, loss = 'mean_absolute_error', metrics=[r_squared])
-# TODO: See how it does in longer epochs
 history = model.fit(X_train, y_train, epochs = 200, validation_data = (X_test, y_test))
 score = model.evaluate(X_test, y_test, verbose = 0)
 
