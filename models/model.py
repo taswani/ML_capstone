@@ -14,8 +14,6 @@ reg = xgb.XGBRegressor(n_estimators=50)
 #Train-test-split and crossvalidation - crossvalidate convenience function (gives the type of error you want)
 tscv = TimeSeriesSplit(n_splits=4)
 
-# TODO: pull out numpy array and slice that instead, using indexing instead to split
-
 for train_index, test_index in tscv.split(X):
     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
@@ -37,11 +35,10 @@ reg.fit(X_train, y_train,
 predict = reg.predict(X_test)
 print("R-squared value: ", reg.score(X_test, y_test))
 # Best R-squared value I have so far is: 0.9866523109744227
-# TODO: Get MAE for comparison
-# TODO: Look at significance of predictors coefficient for linear regression (have to use statsmodels)
 
 xgb.plot_importance(reg)
 plt.show()
 
 # TODO: Ensembling linear regression and XGBoost - bagging
         # Look at stacking, using predictions from both models and inputting it into a different model
+        # http://rasbt.github.io/mlxtend/user_guide/regressor/StackingRegressor/

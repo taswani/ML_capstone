@@ -16,7 +16,9 @@ from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_val
 # TODO: Scikit Learn for feature selection, for checking importance of polarity and sentiment in relation to predictions
 # Looking for feature selection in regards to regression: f-regression
 # Isn't exactly causation, but there is correlation
-# Hard to use sci-kit learn feature selection where there aren't any estimators
+# Keras wrapper that makes it compatible with scikit learn's need for an estimator object
+# KerasClassifier or KerasRegressor is a wrapper for neural network that adds in estimator
+# RFE might take too much time, maybe not worth
 
 # Removing Average Mean, Differential to become a little more efficient
 X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity', 'Sentiment']]
