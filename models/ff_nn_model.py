@@ -18,7 +18,8 @@ from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_val
 # Isn't exactly causation, but there is correlation
 # Keras wrapper that makes it compatible with scikit learn's need for an estimator object
 # KerasClassifier or KerasRegressor is a wrapper for neural network that adds in estimator
-# RFE might take too much time, maybe not worth
+# from keras.wrappers.scikit_learn import KerasRegressor
+# RFE ranked all features as rank 1, concluding that it was not worth including
 
 # Removing Average Mean, Differential to become a little more efficient
 X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity', 'Sentiment']]
@@ -46,15 +47,18 @@ def r_squared(y_true, y_pred):
     SS_tot = K.sum(K.square(y_true - K.mean(y_true)))
     return (1 - SS_res/(SS_tot + K.epsilon()))
 
-# Begin NN
-model = Sequential()
+def model_creation():
+    # Begin NN
+    model = Sequential()
+    model.add(Dense(units = 20, activation = 'relu'))
+    # TODO: Experiment with dropout
+    model.add(Dense(units = 1))
+    # TODO: Scheduled learning rate
+    adam = optimizers.Adam(learning_rate = .003)
+    model.compile(optimizer = adam, loss = 'mean_absolute_error', metrics=[r_squared])
+    return model
 
-model.add(Dense(units = 20, activation = 'relu'))
-# TODO: Experiment with dropout
-model.add(Dense(units = 1))
-# TODO: Scheduled learning rate
-adam = optimizers.Adam(learning_rate = .003)
-model.compile(optimizer = adam, loss = 'mean_absolute_error', metrics=[r_squared])
+model = model_creation()
 history = model.fit(X_train, y_train, epochs = 200, validation_data = (X_test, y_test))
 score = model.evaluate(X_test, y_test, verbose = 0)
 

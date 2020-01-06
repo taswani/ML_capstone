@@ -4,6 +4,8 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import numpy as np
 import xgboost as xgb
+from mlxtend.regressor import StackingRegressor
+from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
@@ -42,3 +44,10 @@ plt.show()
 # TODO: Ensembling linear regression and XGBoost - bagging
         # Look at stacking, using predictions from both models and inputting it into a different model
         # http://rasbt.github.io/mlxtend/user_guide/regressor/StackingRegressor/
+
+lr = LinearRegression()
+
+stregr = StackingRegressor(regressors=[lr, reg],
+                           meta_regressor=reg)
+stregr = stregr.fit(X_train, y_train)
+print('Variance Score: %.4f' % stregr.score(X_train, y_train))
