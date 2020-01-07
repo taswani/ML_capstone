@@ -41,9 +41,8 @@ print("R-squared value: ", reg.score(X_test, y_test))
 xgb.plot_importance(reg)
 plt.show()
 
-# TODO: Ensembling linear regression and XGBoost - bagging
-        # Look at stacking, using predictions from both models and inputting it into a different model
-        # http://rasbt.github.io/mlxtend/user_guide/regressor/StackingRegressor/
+# TODO: RFE on classical model, and then use features selected to train neural network
+# TODO: Yellow brick package for visualizing the feature elimination from RFE
 
 lr = LinearRegression()
 
