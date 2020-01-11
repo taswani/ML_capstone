@@ -17,7 +17,7 @@ from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_val
 # Keras wrapper that makes it compatible with scikit learn's need for an estimator object
 # KerasClassifier or KerasRegressor is a wrapper for neural network that adds in estimator
 # from keras.wrappers.scikit_learn import KerasRegressor
-# Use features that remain after the RFE to train the model 
+# Use features that remain after the RFE to train the model
 
 # Removing Average Mean, Differential to become a little more efficient
 X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity', 'Sentiment']]
@@ -60,7 +60,12 @@ model = model_creation()
 history = model.fit(X_train, y_train, epochs = 200, validation_data = (X_test, y_test))
 score = model.evaluate(X_test, y_test, verbose = 0)
 
-# Mean-absolute-error: 0.00567343344951354, R-squared: 0.953440248966217, after 200 epochs, lr = .003, n_splits=5
+# Mean-absolute-error: 0.006511627036151747, R-squared: 0.9401201605796814, after 200 epochs, lr = .003, n_splits=5
+# Lots of noise accompanying the lack of sentiment
+
+# Mean-absolute-error: 0.007157805442277875, R-squared: 0.9280686378479004, after 200 epochs, lr = .003, n_splits=5
+# Stable with sentiment
+
 print("Mean-absolute-error: ", score[0])
 print("R-squared: ", score[1])
 

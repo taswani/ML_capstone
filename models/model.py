@@ -7,6 +7,8 @@ import xgboost as xgb
 from mlxtend.regressor import StackingRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
+from sklearn.feature_selection import RFE
+from yellowbrick.model_selection import RFECV
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
 X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity', 'Sentiment']]
@@ -41,12 +43,20 @@ print("R-squared value: ", reg.score(X_test, y_test))
 xgb.plot_importance(reg)
 plt.show()
 
-# TODO: RFE on classical model, and then use features selected to train neural network
-# TODO: Yellow brick package for visualizing the feature elimination from RFE
-
 lr = LinearRegression()
 
 stregr = StackingRegressor(regressors=[lr, reg],
                            meta_regressor=reg)
 stregr = stregr.fit(X_train, y_train)
 print('Variance Score: %.4f' % stregr.score(X_train, y_train))
+
+# RFE Classical Model
+estimator = reg
+selector = RFE(estimator, 3, step=1)
+selector = selector.fit(X, y)
+print(selector.ranking_)
+
+# Score coming negative for XGBRegressor but positive for lr
+visualizer = RFECV(lr, cv=tscv)
+visualizer.fit(X, y)
+visualizer.show()
