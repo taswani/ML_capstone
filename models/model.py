@@ -57,6 +57,8 @@ selector = selector.fit(X, y)
 print(selector.ranking_)
 
 # Score coming negative for XGBRegressor but positive for lr
-visualizer = RFECV(lr, cv=tscv)
+visualizer = RFECV(reg, cv=tscv)
 visualizer.fit(X, y)
 visualizer.show()
+
+# TODO: look at confidence intervals for R-squared, MSE (Sklearn - 95% confidence interval)

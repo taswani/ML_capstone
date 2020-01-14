@@ -96,3 +96,5 @@ def vectorization(result_df):
 # Data should already preprocessed, mainly acting on training and testing data post wrangling
 # Create other functions to help validate the data in different ways
 # look into result_df['Headlines'].str.lower()
+
+# TODO: Look at unit 17 for refactoring tips

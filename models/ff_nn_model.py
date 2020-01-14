@@ -12,6 +12,8 @@ from keras.preprocessing.sequence import TimeseriesGenerator
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
+# TODO: Fix random number seed to get more reproduceable results
+
 # Removing Average Mean, Differential to become a little more efficient
 X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity', 'Sentiment']]
 y = result_df[['Close']]
@@ -55,6 +57,7 @@ score = model.evaluate(X_test, y_test, verbose = 0)
 
 # Mean-absolute-error: 0.006511627036151747, R-squared: 0.9401201605796814, after 200 epochs, lr = .003, n_splits=5
 # Lots of noise accompanying the lack of sentiment
+# Choice of better numbers over slight training variability
 
 # Mean-absolute-error: 0.007157805442277875, R-squared: 0.9280686378479004, after 200 epochs, lr = .003, n_splits=5
 # Stable with sentiment
