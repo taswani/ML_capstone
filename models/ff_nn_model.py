@@ -10,7 +10,6 @@ from keras import optimizers
 from keras.callbacks.callbacks import EarlyStopping
 from keras.preprocessing.sequence import TimeseriesGenerator
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.feature_selection import RFE
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
 # Removing Average Mean, Differential to become a little more efficient
