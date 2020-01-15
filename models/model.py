@@ -11,7 +11,7 @@ from sklearn.feature_selection import RFE
 from yellowbrick.model_selection import RFECV
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
-X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity', 'Sentiment']]
+X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity']]
 y = result_df[['Close']]
 
 reg = xgb.XGBRegressor(n_estimators=50)
@@ -54,10 +54,10 @@ print('Variance Score: %.4f' % stregr.score(X_train, y_train))
 estimator = reg
 selector = RFE(estimator, 3, step=1)
 selector = selector.fit(X, y)
-print(selector.ranking_)
+print("Feature Ranking: ", selector.ranking_)
 
 # Score coming negative for XGBRegressor but positive for lr
-visualizer = RFECV(reg, cv=tscv)
+visualizer = RFECV(lr, cv=tscv)
 visualizer.fit(X, y)
 visualizer.show()
 

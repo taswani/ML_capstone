@@ -13,7 +13,7 @@ from sklearn.preprocessing import MinMaxScaler
 from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
 
 # Removing Average Mean, Differential to become a little more efficient
-X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity', 'Sentiment']]
+X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity']]
 y = result_df[['Close']]
 
 # Time series specific train-test-split
