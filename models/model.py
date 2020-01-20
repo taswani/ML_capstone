@@ -1,7 +1,6 @@
 from data import result_df
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
 import xgboost as xgb
 from mlxtend.regressor import StackingRegressor
@@ -9,7 +8,7 @@ from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.feature_selection import RFE
 from yellowbrick.model_selection import RFECV
-from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
+from sklearn.model_selection import train_test_split, TimeSeriesSplit
 
 X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity']]
 y = result_df[['Close']]

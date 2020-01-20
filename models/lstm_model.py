@@ -1,16 +1,14 @@
 from data import result_df
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, LSTM, Dropout
+from keras.layers import Dense, LSTM
 from keras import backend as K
 from keras import optimizers
-from keras.callbacks.callbacks import EarlyStopping
 from keras.preprocessing.sequence import TimeseriesGenerator
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
+from sklearn.model_selection import train_test_split, TimeSeriesSplit
 
 # Removing Average Mean, Differential to become a little more efficient
 X = result_df[['Open', 'High', 'Low', 'Average Polarity', 'Polarity']]
@@ -22,9 +20,6 @@ tscv = TimeSeriesSplit(n_splits=4)
 for train_index, test_index in tscv.split(X):
     X_train, X_test = X.iloc[train_index], X.iloc[test_index]
     y_train, y_test = y.iloc[train_index], y.iloc[test_index]
-
-
-# print("X_Train: ", X_train, "X_Test: ", X_test, "y_train: ", y_train, "y_test: ", y_test)
 
 # Scaling all values for a normalized input and output
 min_max_scaler = MinMaxScaler()
@@ -49,10 +44,6 @@ data_gen_test = TimeseriesGenerator(X_test, y_test,
 train_X, train_y = data_gen_train[0]
 test_X, test_y = data_gen_test[0]
 
-# (32, 7, 5)
-# print(train_X.shape)
-# (32, 1)
-# print(train_y)
 
 def r_squared(y_true, y_pred):
     SS_res = K.sum(K.square(y_true - y_pred))
@@ -73,7 +64,7 @@ model.add(Dense(units = 1))
 # Lower learning rate
 adam = optimizers.Adam(learning_rate = .0022)
 model.compile(optimizer = adam, loss = 'mean_absolute_error', metrics=[r_squared])
-# Need to put in later: callbacks = [EarlyStopping(monitor='loss', patience=10)],
+
 # Try model.fit and get history
 history = model.fit_generator(data_gen_train, epochs = 200, validation_data = data_gen_test)
 score = model.evaluate_generator(data_gen_test, verbose=0)

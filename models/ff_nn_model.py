@@ -1,16 +1,15 @@
 from data import result_df
 import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, LSTM, Dropout
+from keras.layers import Dense, LSTM
 from keras import backend as K
 from keras import optimizers
 from keras.callbacks.callbacks import EarlyStopping
 from keras.preprocessing.sequence import TimeseriesGenerator
 from sklearn.preprocessing import MinMaxScaler
-from sklearn.model_selection import train_test_split, TimeSeriesSplit, cross_validate
+from sklearn.model_selection import train_test_split, TimeSeriesSplit
 
 # Random number seed to get more reproduceable results
 np.random.seed(32)
@@ -45,9 +44,7 @@ def model_creation():
     # Begin NN
     model = Sequential()
     model.add(Dense(units = 20, activation = 'relu'))
-    # TODO: Experiment with dropout
     model.add(Dense(units = 1))
-    # TODO: Scheduled learning rate
     adam = optimizers.Adam(learning_rate = .003)
     model.compile(optimizer = adam, loss = 'mean_absolute_error', metrics=[r_squared])
     return model
