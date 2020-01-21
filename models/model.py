@@ -61,3 +61,4 @@ visualizer.fit(X, y)
 visualizer.show()
 
 # TODO: look at confidence intervals for R-squared, MSE (Sklearn - 95% confidence interval)
+# TODO: Train model without cross-validation or splitting into training and testing sets
