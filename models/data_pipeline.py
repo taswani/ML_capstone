@@ -8,7 +8,7 @@ import pandas as pd
 from dask import dataframe as dd
 import re
 
-#In case you need data
+# In case you need data
 # import nltk
 # nltk.download('punkt')
 # nltk.download('stopwords')
@@ -45,8 +45,7 @@ def prepare_data(price_csv, headline_csv):
     to_drop = ['rainforest', 'forest', 'Brazil', 'river', 'jungle', 'River', 'pilots', 'gangs', 'drugs', 'OkCupid', 'dating']
     result_df = result_df[~result_df['Headlines'].str.contains('|'.join(to_drop))]
     # combining duplicates by date
-    result_df = result_df.groupby(['Date', 'Open', 'High', 'Low', 'Close'])['Headlines'].apply('// '.join).reset_index()
-    print(result_df._meta.dtypes)
+    result_df = result_df.groupby(['Date', 'Open', 'High', 'Low', 'Close'])['Headlines'].apply('// '.join, meta=pd.Series(dtype='str', name='Headlines')).reset_index()
     # Changing Dask dataframe to Pandas for reindexing
     result_df = result_df.compute()
     # setting index as dates, and imputing missing dates
