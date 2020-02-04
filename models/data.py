@@ -87,4 +87,4 @@ class Query:
         return query
 
 # TODO: At this point I would pass it to the models in order to get a prediction.
-# Need to look to save the models and incoporate the model into this query class to tie it neatly back to the Flask framework
+# Not really concerned about the date as the prediction is assumed to be in the past. Might want to start with a few features first.

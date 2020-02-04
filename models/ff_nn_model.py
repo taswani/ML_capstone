@@ -49,3 +49,5 @@ plt.plot(history.history['r_squared'], label='train')
 plt.plot(history.history['val_r_squared'], label='test')
 plt.legend()
 plt.show()
+
+# TODO: Save deep learning model in order to avoid retraining

@@ -43,3 +43,5 @@ print("Feature Ranking: ", selector.ranking_)
 
 # TODO: look at confidence intervals for R-squared, MSE (Sklearn - 95% confidence interval)
 # TODO: Train model without cross-validation or splitting into training and testing sets
+# TODO: Serialize classical model so that doesn't retrain,
+# then load up and try with a date from the training data to see if it works.
