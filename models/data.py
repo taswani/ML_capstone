@@ -28,23 +28,20 @@ class DataPreparation:
 
     def time_series_split(self, n):
         tscv = TimeSeriesSplit(n_splits=n)
-
         for train_index, test_index in tscv.split(self.X):
             X_train, X_test = self.X.iloc[train_index], self.X.iloc[test_index]
             y_train, y_test = self.y.iloc[train_index], self.y.iloc[test_index]
-
         return X_train, X_test, y_train, y_test
 
     def min_max_scaling(self, X_train, X_test, y_train, y_test):
         # Scaling all values for a normalized input and output
         min_max_scaler = MinMaxScaler()
-
         X_train = min_max_scaler.fit_transform(X_train)
         X_test = min_max_scaler.transform(X_test)
         y_train = min_max_scaler.fit_transform(y_train)
         y_test = min_max_scaler.transform(y_test)
+        return min_max_scaler, X_train, X_test, y_train, y_test
 
-        return X_train, X_test, y_train, y_test
 
 class Query:
     '''

@@ -3,18 +3,23 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 import xgboost as xgb
+from joblib import dump
 from mlxtend.regressor import StackingRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.preprocessing import MinMaxScaler
 from sklearn.feature_selection import RFE
+
 
 reg = xgb.XGBRegressor(n_estimators=50)
 # Random number seed to get more reproduceable results
 np.random.seed(32)
 
 dp = DataPreparation(result_df)
+X = dp.X
+y = dp.y
+
 X_train, X_test, y_train, y_test = dp.time_series_split(n=4)
-X_train, X_test, y_train, y_test = dp.min_max_scaling(X_train, X_test, y_train, y_test)
+min_max_scaler, X_train, X_test, y_train, y_test = dp.min_max_scaling(X_train, X_test, y_train, y_test)
 
 reg.fit(X_train, y_train,
         eval_set=[(X_train, y_train), (X_test, y_test)],
@@ -35,13 +40,13 @@ stregr = StackingRegressor(regressors=[lr, reg],
 stregr = stregr.fit(X_train, y_train)
 print('Variance Score: %.4f' % stregr.score(X_train, y_train))
 
+dump(stregr, 'classical_model.joblib')
+
 # RFE Classical Model
 estimator = reg
 selector = RFE(estimator, 3, step=1)
 selector = selector.fit(X, y)
 print("Feature Ranking: ", selector.ranking_)
 
-# TODO: look at confidence intervals for R-squared, MSE (Sklearn - 95% confidence interval)
-# TODO: Train model without cross-validation or splitting into training and testing sets
 # TODO: Serialize classical model so that doesn't retrain,
 # then load up and try with a date from the training data to see if it works.

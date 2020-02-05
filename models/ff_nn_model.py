@@ -3,7 +3,7 @@ import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
 from keras.models import Sequential
-from keras.layers import Dense, LSTM
+from keras.layers import Dense
 from keras import optimizers
 from keras.callbacks.callbacks import EarlyStopping
 from sklearn.preprocessing import MinMaxScaler
@@ -14,7 +14,7 @@ np.random.seed(32)
 
 dp = DataPreparation(result_df)
 X_train, X_test, y_train, y_test = dp.time_series_split(n=5)
-X_train, X_test, y_train, y_test = dp.min_max_scaling(X_train, X_test, y_train, y_test)
+min_max_scaler, X_train, X_test, y_train, y_test = dp.min_max_scaling(X_train, X_test, y_train, y_test)
 
 def model_creation():
     # Begin NN
@@ -28,6 +28,8 @@ def model_creation():
 model = model_creation()
 history = model.fit(X_train, y_train, epochs = 200, validation_data = (X_test, y_test))
 score = model.evaluate(X_test, y_test, verbose = 0)
+model.save('ff_model.h5')
+print('Model saved')
 
 # Mean-absolute-error: 0.0052317037178134474, R-squared: 0.9618780612945557, after 200 epochs, lr = .003, n_splits=5
 # Choice of better numbers over slight training variability

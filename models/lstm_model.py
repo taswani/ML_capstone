@@ -13,7 +13,7 @@ np.random.seed(32)
 
 dp = DataPreparation(result_df)
 X_train, X_test, y_train, y_test = dp.time_series_split(n=5)
-X_train, X_test, y_train, y_test = dp.min_max_scaling(X_train, X_test, y_train, y_test)
+min_max_scaler, X_train, X_test, y_train, y_test = dp.min_max_scaling(X_train, X_test, y_train, y_test)
 
 # Using keras' timeseriesgenerator in order to divide the data into batches
 # Putting data into 3D for input to the LSTM
@@ -46,6 +46,8 @@ model.compile(optimizer = adam, loss = 'mean_absolute_error', metrics=[r_squared
 # Try model.fit and get history
 history = model.fit_generator(data_gen_train, epochs = 200, validation_data = data_gen_test)
 score = model.evaluate_generator(data_gen_test, verbose=0)
+model.save('lstm_model.h5')
+print('Model saved')
 
 predicted_stock_price = model.predict(test_X)
 predicted_stock_price = min_max_scaler.inverse_transform(predicted_stock_price)
