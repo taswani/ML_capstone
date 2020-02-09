@@ -1,4 +1,4 @@
-from data import result_df, DataPreparation
+from data import DataPreparation, Query, result_df, r_squared
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np

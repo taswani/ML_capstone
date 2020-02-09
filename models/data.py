@@ -1,6 +1,7 @@
 import data_pipeline as dp
 from textblob import TextBlob
 import pandas as pd
+import re
 from text_classification import *
 from keras import backend as K
 from sklearn.preprocessing import MinMaxScaler
@@ -33,14 +34,17 @@ class DataPreparation:
             y_train, y_test = self.y.iloc[train_index], self.y.iloc[test_index]
         return X_train, X_test, y_train, y_test
 
-    def min_max_scaling(self, X_train, X_test, y_train, y_test):
+    def min_max_scaling(self, X_train, X_test, y_train, y_test, only_scaler=False):
         # Scaling all values for a normalized input and output
         min_max_scaler = MinMaxScaler()
         X_train = min_max_scaler.fit_transform(X_train)
         X_test = min_max_scaler.transform(X_test)
         y_train = min_max_scaler.fit_transform(y_train)
         y_test = min_max_scaler.transform(y_test)
-        return min_max_scaler, X_train, X_test, y_train, y_test
+        if only_scaler is True:
+            return min_max_scaler
+        else:
+            return min_max_scaler, X_train, X_test, y_train, y_test
 
 
 class Query:
@@ -49,16 +53,14 @@ class Query:
     for the sake of predictions.
     Utilized for taking user data from Flask framework in order to create predictions.
     '''
-    def __init__(self, date, open, high, low, headline):
-        self.date = date
+    def __init__(self, open, high, low, headline, result_df):
         self.open = open
         self.high = high
         self.low = low
         self.headline = headline
+        self.average_polarity = result_df['Average Polarity'].iloc[-1]
 
     def convert_data(self):
-        converted_date = pd.to_datetime(self.date)
-
         corpus = self.headline
         # Remove all the special characters
         processed_feature = re.sub(r'[^a-zA-Z\s]', '', corpus, re.I|re.A)
@@ -75,13 +77,8 @@ class Query:
         processed_features.append(processed_feature)
         sentence = TextBlob(processed_feature)
         polarity = sentence.sentiment.polarity
-        data = [converted_date, self.open, self.high, self.low, polarity]
+        data = [self.open, self.high, self.low, self.average_polarity, polarity]
         return data
-
-    def query_min_max(self, data):
-        min_max_scaler = MinMaxScaler()
-        query = min_max_scaler.fit_transform(data)
-        return query
 
 # TODO: At this point I would pass it to the models in order to get a prediction.
 # Not really concerned about the date as the prediction is assumed to be in the past. Might want to start with a few features first.

@@ -1,4 +1,4 @@
-from data import result_df, r_squared, DataPreparation
+from data import DataPreparation, Query, result_df, r_squared
 import pandas as pd
 import matplotlib.pyplot as plt
 import numpy as np
@@ -51,5 +51,3 @@ plt.plot(history.history['r_squared'], label='train')
 plt.plot(history.history['val_r_squared'], label='test')
 plt.legend()
 plt.show()
-
-# TODO: Save deep learning model in order to avoid retraining
