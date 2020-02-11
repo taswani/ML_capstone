@@ -11,6 +11,8 @@ ff_model = load_model('ff_model.h5', custom_objects={'r_squared': r_squared})
 # Importing lstm model in case for later testing
 lstm_model = load_model('lstm_model.h5', custom_objects={'r_squared': r_squared})
 
+# Requires 14x5x1 for LSTM model
+
 # TODO: Query with data to test model prediction
 # Use this as test data:
 # 1828.949951,1831.089966,1802.219971, "Russian officials are investigating Apple’s moves to remove parental control apps from its App Store shortly after it released a competing service.// Amazon is trying, starting with a new Jim Gaffigan set. So is HBO, though it’s more niche with acts like Julio Torres. And don’t count out YouTube.// “David Bowie: Finding Fame” airs on Showtime. And stream a Kurt Weill opera on BroadwayHD.// Toni Morrison dies. Nicolas Cage. Five years after Ferguson. What makes an American? A history of green lawns. Woodstock at 50. And more."
